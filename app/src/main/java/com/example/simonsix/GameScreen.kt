@@ -8,20 +8,38 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun GameScreen()
 {
+    var sequence by rememberSaveable { mutableStateOf("") }
+
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -29,50 +47,84 @@ fun GameScreen()
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.red)),
-                onClick = {}
+                onClick = { sequence += "R" }
             ){}
-            
+
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.magenta)),
-                onClick = {}
+                onClick = { sequence += "M" }
             ){}
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.green)),
-                onClick = {}
+                onClick = { sequence += "G" }
             ){}
 
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.yellow)),
-                onClick = {}
+                onClick = { sequence += "Y" }
             ){}
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.cyan)),
-                onClick = {}
+                onClick = { sequence += "C" }
             ){}
 
             Button(
-                modifier = Modifier.height(150.dp).width(150.dp),
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp),
                 shape = RoundedCornerShape(8.dp),
                 colors = buttonColors(colorResource(id=R.color.blue)),
-                onClick = {}
+                onClick = { sequence += "B" }
             ){}
         }
+
+        Text(
+            modifier = Modifier
+                .height(100.dp)
+                .padding(16.dp)
+                .verticalScroll(ScrollState(LocalWindowInfo.current.containerSize.height)),
+            fontSize = 25.sp,
+            letterSpacing = 5.sp,
+            lineHeight = 30.sp,
+            text = buildAnnotatedString{
+                for(c in sequence){
+                    when(c){
+                        'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("R") }
+                        'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("Y") }
+                        'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("G") }
+                        'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("C") }
+                        'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("B") }
+                        'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) { append("M") }
+                    }
+                }
+            }
+        )
     }
 }
