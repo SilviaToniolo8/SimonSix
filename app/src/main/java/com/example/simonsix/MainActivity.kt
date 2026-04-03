@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(paddingValues = innerPadding)
                     ) {
                         composable (route="game") {
-                            GameScreen()
+                            GameScreen(onFinishClicked = { navController.navigate("chronology")})
                         }
 
                         composable (route="chronology") {

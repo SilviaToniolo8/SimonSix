@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,14 +30,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun GameScreen()
+fun GameScreen(onFinishClicked: () -> Unit)
 {
     var sequence by rememberSaveable { mutableStateOf("") }
 
@@ -107,10 +114,11 @@ fun GameScreen()
 
         Text(
             modifier = Modifier
-                .height(100.dp)
+                .height(160.dp)
                 .padding(16.dp)
                 .verticalScroll(ScrollState(LocalWindowInfo.current.containerSize.height)),
             fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
             letterSpacing = 5.sp,
             lineHeight = 30.sp,
             text = buildAnnotatedString{
@@ -126,5 +134,38 @@ fun GameScreen()
                 }
             }
         )
+
+        Row(
+            modifier = Modifier.width(300.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.Bottom
+        ){
+            TextButton(
+                modifier = Modifier.height(70.dp),
+                onClick = { sequence = "" }
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = "clear")
+
+                Text(fontSize = 18.sp,
+                    text = stringResource(R.string.cancel))
+            }
+
+            Button(
+                modifier = Modifier.height(70.dp),
+                colors = buttonColors(colorResource(id=R.color.blue), contentColor = Color.White),
+                onClick = onFinishClicked
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Done,
+                    contentDescription = "finish")
+
+                Text(
+                    fontSize = 17.sp,
+                    text = stringResource(R.string.finish))
+            }
+        }
+
     }
 }
