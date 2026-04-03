@@ -3,8 +3,9 @@
     <color name="red">#E24B4A</color>
     <color name="yellow">#FFDE59</color>
     <color name="green">#7ED957</color>
-    <color name="dark_green">#4CAF50</color>
     <color name="cyan">#5CE1E6</color>
     <color name="blue">#378ADD</color>
     <color name="magenta">#E978C4</color>
+
+    <color name="ic_launcher_background">#252525</color>
 </resources>
