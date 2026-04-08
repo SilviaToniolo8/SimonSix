@@ -6,6 +6,6 @@
     <color name="cyan">#5CE1E6</color>
     <color name="blue">#378ADD</color>
     <color name="magenta">#E978C4</color>
-
+    <color name="white">#FFFFFF</color>
     <color name="ic_launcher_background">#252525</color>
 </resources>
