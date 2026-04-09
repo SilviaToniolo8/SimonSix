@@ -8,8 +8,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -57,11 +58,16 @@ fun GameScreen(onFinishClicked: () -> Unit)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.red)),
                     onClick = { sequence += if (sequence == "") "R" else ",R" }
@@ -69,19 +75,23 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.magenta)),
                     onClick = { sequence += if (sequence == "") "M" else ",M" }
                 ){}
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.green)),
                     onClick = { sequence += if (sequence == "") "G" else ",G" }
@@ -89,19 +99,23 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.yellow)),
                     onClick = { sequence += if (sequence == "") "Y" else ",Y" }
                 ){}
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.cyan)),
                     onClick = { sequence += if (sequence == "") "C" else ",C" }
@@ -109,8 +123,8 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
                 Button(
                     modifier = Modifier
-                        .height(150.dp)
-                        .width(150.dp),
+                        .weight(1f)
+                        .fillMaxHeight(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(id=R.color.blue)),
                     onClick = { sequence += if (sequence == "") "B" else ",B" }
@@ -119,61 +133,71 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
             Text(
                 modifier = Modifier
-                    .height(160.dp)
-                    .padding(16.dp)
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(10.dp)
                     .verticalScroll(ScrollState(LocalWindowInfo.current.containerSize.height)),
-                fontSize = 25.sp,
+                fontSize = 30.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 5.sp,
-                lineHeight = 30.sp,
-                text = buildAnnotatedString{
-                    for(c in sequence){
-                        when(c){
-                            'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("R") }
-                            'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("Y") }
-                            'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("G") }
-                            'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("C") }
-                            'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("B") }
-                            'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) { append("M") }
-                            ',' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.white).toArgb()))) { append(",") }
+                lineHeight = 35.sp,
+                text = buildAnnotatedString {
+                    for (c in sequence) {
+                        when (c) {
+                            'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("R")}
+                            'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("Y")}
+                            'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("G")}
+                            'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {append("C")}
+                            'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {append("B")}
+                            'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) {append("M")}
+                            ',' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.white).toArgb()))) {append(", ")}
                         }
                     }
                 }
             )
 
             Row(
-                modifier = Modifier.width(300.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Bottom
-            ){
+            ) {
                 TextButton(
-                    modifier = Modifier.height(70.dp),
                     onClick = { sequence = "" }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Clear,
-                        contentDescription = "clear")
+                        contentDescription = "clear"
+                    )
 
-                    Text(fontSize = 18.sp,
-                        text = stringResource(R.string.cancel))
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        fontSize = 20.sp,
+                        text = stringResource(R.string.cancel)
+                    )
                 }
 
                 Button(
-                    modifier = Modifier.height(70.dp),
-                    colors = buttonColors(colorResource(id=R.color.blue), contentColor = Color.White),
+                    colors = buttonColors(
+                        containerColor = colorResource(id = R.color.blue),
+                        contentColor = Color.White
+                    ),
                     onClick = onFinishClicked
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Done,
-                        contentDescription = "finish")
+                        contentDescription = "finish"
+                    )
 
                     Text(
-                        fontSize = 17.sp,
-                        text = stringResource(R.string.finish))
+                        modifier = Modifier.padding(10.dp),
+                        fontSize = 20.sp,
+                        text = stringResource(R.string.finish)
+                    )
                 }
             }
         }
-    } else {
+    }
+    else {
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -181,100 +205,128 @@ fun GameScreen(onFinishClicked: () -> Unit)
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 Button(
-                    colors = buttonColors(colorResource(R.color.red)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.red)),
                     onClick = { sequence += if (sequence == "") "R" else ",R" }
                 ) {}
 
                 Button(
-                    colors = buttonColors(colorResource(R.color.green)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.green)),
                     onClick = { sequence += if (sequence == "") "G" else ",G" }
                 ) {}
 
                 Button(
-                    colors = buttonColors(colorResource(R.color.cyan)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.cyan)),
                     onClick = { sequence += if (sequence == "") "C" else ",C" }
                 ) {}
             }
 
 
             Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ){
                 Button(
-                    colors = buttonColors(colorResource(R.color.magenta)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.magenta)),
                     onClick = { sequence += if (sequence == "") "M" else ",M" }
                 ) {}
 
                 Button(
-                    colors = buttonColors(colorResource(R.color.yellow)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.yellow)),
                     onClick = { sequence += if (sequence == "") "Y" else ",Y" }
                 ) {}
 
                 Button(
-                    colors = buttonColors(colorResource(R.color.blue)),
-                    modifier = Modifier.height(80.dp).width(140.dp),
+                    modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
+                    colors = buttonColors(colorResource(R.color.blue)),
                     onClick = { sequence += if (sequence == "") "B" else ",B" }
                 ) {}
             }
 
-            Column {
+            Column (modifier = Modifier
+                .weight(2f)
+                .fillMaxHeight()
+            ) {
                 Text(
                     modifier = Modifier
-                        .height(160.dp)
-                        .padding(16.dp)
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(10.dp)
                         .verticalScroll(ScrollState(LocalWindowInfo.current.containerSize.height)),
-                    fontSize = 25.sp,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
                     letterSpacing = 5.sp,
-                    lineHeight = 30.sp,
-                    text = buildAnnotatedString{
-                        for(c in sequence){
-                            when(c){
-                                'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("R") }
-                                'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("Y") }
-                                'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("G") }
-                                'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("C") }
-                                'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("B") }
-                                'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) { append("M") }
-                                ',' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.white).toArgb()))) { append(",") }
+                    lineHeight = 35.sp,
+                    text = buildAnnotatedString {
+                        for (c in sequence) {
+                            when (c) {
+                                'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("R")}
+                                'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("Y")}
+                                'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("G")}
+                                'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {append("C")}
+                                'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {append("B")}
+                                'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) {append("M")}
+                                ',' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.white).toArgb()))) {append(", ")}
                             }
                         }
                     }
                 )
 
                 Row(
-                    modifier = Modifier.padding(16.dp).width(350.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ){
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
                     TextButton(
-                        modifier = Modifier.height(60.dp),
                         onClick = { sequence = "" }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Clear,
-                            contentDescription = "finish"
+                            contentDescription = "clear"
                         )
 
-                        Text(fontSize = 18.sp,
-                            text = stringResource(R.string.cancel))
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 20.sp,
+                            text = stringResource(R.string.cancel)
+                        )
                     }
 
                     Button(
-                        modifier = Modifier.height(60.dp),
-                        colors = buttonColors(colorResource(id=R.color.blue), contentColor = Color.White),
+                        colors = buttonColors(
+                            containerColor = colorResource(id = R.color.blue),
+                            contentColor = Color.White
+                        ),
                         onClick = onFinishClicked
                     ) {
                         Icon(
@@ -283,8 +335,10 @@ fun GameScreen(onFinishClicked: () -> Unit)
                         )
 
                         Text(
-                            fontSize = 17.sp,
-                            text = stringResource(R.string.finish))
+                            modifier = Modifier.padding(10.dp),
+                            fontSize = 20.sp,
+                            text = stringResource(R.string.finish)
+                        )
                     }
                 }
             }

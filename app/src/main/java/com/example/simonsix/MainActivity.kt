@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,7 +30,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(paddingValues = innerPadding)
                     ) {
                         composable (route="game") {
-                            GameScreen(onFinishClicked = { navController.navigate("chronology")})
+                            GameScreen(
+                                onFinishClicked = { navController.navigate("chronology"){
+                                    popUpTo(route="game")}
+                                }
+                            )
                         }
 
                         composable (route="chronology") {
