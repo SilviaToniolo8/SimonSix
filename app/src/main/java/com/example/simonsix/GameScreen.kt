@@ -317,7 +317,7 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            fontSize = 20.sp,
+                            fontSize = 18.sp,
                             text = stringResource(R.string.cancel)
                         )
                     }
@@ -335,8 +335,8 @@ fun GameScreen(onFinishClicked: () -> Unit)
                         )
 
                         Text(
-                            modifier = Modifier.padding(10.dp),
-                            fontSize = 20.sp,
+                            modifier = Modifier.padding(8.dp),
+                            fontSize = 18.sp,
                             text = stringResource(R.string.finish)
                         )
                     }
