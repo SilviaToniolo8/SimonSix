@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +24,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             SimonSixTheme {
                 val navController = rememberNavController()
-                
+                val prevGames = rememberSaveable { mutableStateListOf<String>() }
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
@@ -31,14 +34,20 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable (route="game") {
                             GameScreen(
-                                onFinishClicked = { navController.navigate("chronology"){
-                                    popUpTo(route="game")}
+                                onFinishClicked = { seq ->
+                                    prevGames.add(0, seq)
+                                    navController.navigate("chronology")
                                 }
                             )
                         }
 
                         composable (route="chronology") {
-                            ChronologyScreen()
+                            ChronologyScreen(
+                                prevGames,
+                                onBackClicked = { navController.navigate("game"){
+                                    popUpTo(route="game")}
+                                }
+                            )
                         }
                     }
                 }

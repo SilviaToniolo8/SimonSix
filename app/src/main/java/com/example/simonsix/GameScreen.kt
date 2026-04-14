@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun GameScreen(onFinishClicked: () -> Unit)
+fun GameScreen(onFinishClicked: (String) -> Unit)
 {
     val orientation = LocalConfiguration.current.orientation
     var sequence by rememberSaveable { mutableStateOf("") }
@@ -181,7 +181,11 @@ fun GameScreen(onFinishClicked: () -> Unit)
                         containerColor = colorResource(id = R.color.blue),
                         contentColor = Color.White
                     ),
-                    onClick = onFinishClicked
+                    onClick = {
+                        val s = sequence
+                        sequence = ""
+                        onFinishClicked(s)
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Done,
@@ -265,8 +269,8 @@ fun GameScreen(onFinishClicked: () -> Unit)
 
                 Button(
                     modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
+                        .weight(1f)
+                        .fillMaxWidth(),
                     shape = RoundedCornerShape(8.dp),
                     colors = buttonColors(colorResource(R.color.blue)),
                     onClick = { sequence += if (sequence == "") "B" else ",B" }
@@ -327,7 +331,11 @@ fun GameScreen(onFinishClicked: () -> Unit)
                             containerColor = colorResource(id = R.color.blue),
                             contentColor = Color.White
                         ),
-                        onClick = onFinishClicked
+                        onClick = {
+                            val s = sequence
+                            sequence = ""
+                            onFinishClicked(s)
+                        }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Done,

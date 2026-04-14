@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Simon Six</string>
     <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
     <string name="finish">Finish</string>
+    <string name="previous_games">Previous games</string>
 </resources>
