@@ -42,12 +42,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable (route="chronology") {
-                            ChronologyScreen(
-                                prevGames,
-                                onBackClicked = { navController.navigate("game"){
-                                    popUpTo(route="game")}
-                                }
-                            )
+                            ChronologyScreen(prevGames)
                         }
                     }
                 }

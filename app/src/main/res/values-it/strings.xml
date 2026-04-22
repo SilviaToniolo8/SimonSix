@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Simon Six</string>
-    <string name="back">Indietro</string>
     <string name="cancel">Cancella</string>
     <string name="finish">Fine partita</string>
     <string name="previous_games">Partite precedenti</string>

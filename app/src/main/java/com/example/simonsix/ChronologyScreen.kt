@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ChronologyScreen(prevGames: MutableList<String>, onBackClicked:() -> Unit)
+fun ChronologyScreen(prevGames: MutableList<String>)
 {
     Column(
         modifier = Modifier
@@ -66,25 +66,6 @@ fun ChronologyScreen(prevGames: MutableList<String>, onBackClicked:() -> Unit)
                     )
                 }
             }
-        }
-
-        Button(
-            modifier = Modifier.height(70.dp).padding(10.dp),
-            colors = buttonColors(
-                containerColor = colorResource(id = R.color.blue),
-                contentColor = Color.White
-            ),
-            onClick = onBackClicked
-        ){
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = null
-            )
-
-            Text(
-                fontSize = 20.sp,
-                text = stringResource(R.string.back)
-            )
         }
     }
 }
