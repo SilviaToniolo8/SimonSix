@@ -5,16 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
@@ -43,11 +37,20 @@ fun ChronologyScreen(prevGames: MutableList<String>)
             text = stringResource(R.string.previous_games)
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize().weight(0.8f).safeDrawingPadding().padding(8.dp)) {
-            items(prevGames){ game ->
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(modifier = Modifier.width(48.dp),//.weight(0.1f),
-                        text = game.filterNot{ it == ',' }.length.toString(),
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.8f)
+                .safeDrawingPadding()
+                .padding(8.dp)
+        ) {
+            itemsIndexed( items = prevGames ){ index, game ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(modifier = Modifier.width(48.dp),
+                        text = game.count { it != ',' }.toString(),
                         fontSize = 20.sp
                     )
 
@@ -61,8 +64,8 @@ fun ChronologyScreen(prevGames: MutableList<String>)
                         letterSpacing = 5.sp,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 1,
-                        text=game,
-                        color = chooseColor(prevGames.indexOf(game))
+                        text = game,
+                        color = chooseColor(index)
                     )
                 }
             }
@@ -70,6 +73,8 @@ fun ChronologyScreen(prevGames: MutableList<String>)
     }
 }
 
+// Assign each row a color by cycling through the six colors in the game:
+// red → yellow → green → cyan → blue → magenta → red → ..
 @Composable
 private fun chooseColor(index: Int): Color
 {
