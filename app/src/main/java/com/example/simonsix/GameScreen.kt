@@ -254,7 +254,7 @@ private fun ActionButtons(onCancelClick:() -> Unit, onFinishClicked:() -> Unit){
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Bottom
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TextButton( onClick = onCancelClick ) {
             Icon(
