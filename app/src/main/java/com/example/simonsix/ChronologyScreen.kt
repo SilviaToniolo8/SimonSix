@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ChronologyScreen(prevGames: MutableList<String>)
+fun ChronologyScreen()
 {
     Column(
         modifier = Modifier
@@ -44,7 +44,7 @@ fun ChronologyScreen(prevGames: MutableList<String>)
                 .safeDrawingPadding()
                 .padding(8.dp)
         ) {
-            itemsIndexed( items = prevGames ){ index, game ->
+            itemsIndexed( items = GamesData.previousGames ){ index, game ->
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
