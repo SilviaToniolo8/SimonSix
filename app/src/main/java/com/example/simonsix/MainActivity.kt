@@ -7,8 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,9 +23,6 @@ class MainActivity : ComponentActivity(){
             SimonSixTheme {
                 val navController = rememberNavController()
 
-                // prevGames is the list of sequences already played, shared between screens
-                val prevGames = rememberSaveable { mutableStateListOf<String>() }
-
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
@@ -38,7 +33,7 @@ class MainActivity : ComponentActivity(){
                             GameScreen(
                                 onFinishClicked = { seq ->
                                     // The new sequence is inserted at the top of the list so the most recent one always appears first
-                                    prevGames.add(0, seq)
+                                    GamesData.previousGames.add(0,seq)
                                     navController.navigate("chronology")
                                 }
                             )
@@ -46,7 +41,7 @@ class MainActivity : ComponentActivity(){
 
                         // Chronology screen: shows all sequences of previous matches
                         composable (route="chronology") {
-                            ChronologyScreen(prevGames)
+                            ChronologyScreen()
                         }
                     }
                 }
