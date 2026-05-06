@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">Simon Six</string>
+    <string name="no_games_yet">Ancora nessuna partita</string>
+    <string name="click_play">Clicca \'▶\' per giocare</string>
+
+    <string name="start">Avvia</string>
+    <string name="pause">Pausa</string>
+    <string name="end">Fine</string>
+
+    <string name="game">Partita</string>
+    <string name="button_pressed">Pulsanti premuti</string>
+    <string name="error_button">Pulsante sbagliato</string>
+
     <string name="cancel">Cancella</string>
     <string name="finish">Fine partita</string>
     <string name="previous_games">Partite precedenti</string>

@@ -1,5 +1,6 @@
 package com.example.simonsix
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         setContent {
             SimonSixTheme {
                 val navController = rememberNavController()
@@ -26,22 +27,37 @@ class MainActivity : ComponentActivity(){
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "game",
+                        startDestination = "chronology",
                         modifier = Modifier.padding(paddingValues = innerPadding)
                     ) {
-                        composable (route="game") {
-                            GameScreen(
-                                onFinishClicked = { seq ->
-                                    // The new sequence is inserted at the top of the list so the most recent one always appears first
-                                    GamesData.previousGames.add(0,seq)
-                                    navController.navigate("chronology")
+                        // Chronology screen: shows all sequences of previous matches
+                        composable(route = "chronology") {
+                            ChronologyScreen(
+                                onPlay = { navController.navigate("game") },
+                                onGameClicked = { g ->
+                                    navController.navigate("details/${Uri.encode(g)}") {
+                                        popUpTo(route = "chronology")
+                                    }
                                 }
                             )
                         }
 
-                        // Chronology screen: shows all sequences of previous matches
-                        composable (route="chronology") {
-                            ChronologyScreen()
+                        composable(route = "details/{game}") { backStackEntry ->
+                            DetailsGameScreen(
+                                Uri.decode(
+                                    backStackEntry.arguments?.getString("game").orEmpty()
+                                )
+                            )
+                        }
+
+                        composable(route = "game") {
+                            GameScreen(
+                                onFinishClicked = { seq ->
+                                    // The new sequence is inserted at the top of the list so the most recent one always appears first
+                                    GamesData.previousGames.add(0, seq)
+                                    navController.navigate("chronology")
+                                }
+                            )
                         }
                     }
                 }
