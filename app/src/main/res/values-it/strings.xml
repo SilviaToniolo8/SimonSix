@@ -11,6 +11,8 @@
     <string name="button_pressed">Pulsanti premuti</string>
     <string name="error_button">Pulsante sbagliato</string>
 
+    <string name="game_over">Game Over</string>
+
     <string name="cancel">Cancella</string>
     <string name="finish">Fine partita</string>
     <string name="previous_games">Partite precedenti</string>

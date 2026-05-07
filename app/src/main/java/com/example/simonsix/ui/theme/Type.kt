@@ -18,6 +18,11 @@ val TextFont = FontFamily(
     Font(R.font.kazycase, FontWeight.Bold)
 )
 
+val GameOverFont = FontFamily(
+    Font(R.font.positive_system, FontWeight.Normal),
+    Font(R.font.positive_system, FontWeight.Bold)
+)
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(

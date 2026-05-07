@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity(){
                                 onPlay = { navController.navigate("game") },
                                 onGameClicked = { g ->
                                     navController.navigate("details/${Uri.encode(g)}") {
-                                        popUpTo(route = "chronology")
+                                        popUpTo(route = "details/${Uri.encode(g)}")
                                     }
                                 }
                             )
@@ -55,7 +55,8 @@ class MainActivity : ComponentActivity(){
                                 onFinishClicked = { seq ->
                                     // The new sequence is inserted at the top of the list so the most recent one always appears first
                                     GamesData.previousGames.add(0, seq)
-                                    navController.navigate("chronology")
+                                    navController.navigate("chronology"){
+                                    popUpTo(route = "chronology")}
                                 }
                             )
                         }

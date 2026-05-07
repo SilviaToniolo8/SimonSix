@@ -48,7 +48,7 @@ fun DetailsGameScreen (game: String)
                     .weight(1f)
                     .padding(end=16.dp)
             ){
-                Text(text = "Tasti premuti",
+                Text(text = stringResource(R.string.button_pressed),
                     modifier = Modifier.padding(8.dp)
                 )
 
@@ -60,7 +60,7 @@ fun DetailsGameScreen (game: String)
             Card(
                 modifier = Modifier.weight(1f)
             ){
-                Text(text = "Errore nel tasto",
+                Text(text = stringResource(R.string.error_button),
                     modifier = Modifier.padding(8.dp)
                 )
 

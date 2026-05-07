@@ -1,7 +1,11 @@
 package com.example.simonsix
 
+import kotlinx.coroutines.delay
+import android.util.Log
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -44,8 +49,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.simonsix.ui.theme.GameOverFont
 import com.example.simonsix.ui.theme.TextFont
 import com.example.simonsix.ui.theme.TitleFont
+import kotlin.text.count
 
 @Composable
 fun GameScreen(onFinishClicked: (String) -> Unit)
@@ -53,6 +60,16 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
     val orientation = LocalConfiguration.current.orientation
 
     var sequence by rememberSaveable { mutableStateOf("") }
+
+    var activeButton by rememberSaveable { mutableStateOf<String?>(null) }
+    var isShowingSequence by rememberSaveable { mutableStateOf(false) }
+    var isGameOver by rememberSaveable { mutableStateOf(false) }
+    var isClickable by rememberSaveable { mutableStateOf(false) }
+    var resumeIndex by rememberSaveable { mutableIntStateOf(0) }
+
+    var isStart by rememberSaveable { mutableStateOf(true)}
+    var isPause by rememberSaveable { mutableStateOf(false)}
+    var isFinish by rememberSaveable { mutableStateOf(false)}
 
     // scrollState is used to remember the current scroll position
     // https://developer.android.com/develop/ui/compose/touch-input/scroll/scroll-modifiers
@@ -62,156 +79,324 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
     //https://developer.android.com/reference/kotlin/androidx/compose/runtime/LaunchedEffect.composable
     LaunchedEffect(sequence) { scrollState.animateScrollTo(scrollState.maxValue) }
 
-    if (orientation == Configuration.ORIENTATION_PORTRAIT)
-    {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Text(
-                fontFamily = TitleFont,
-                fontSize = 55.sp,
-                letterSpacing = 3.sp,
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
-                }
-            )
+    //computer
+    LaunchedEffect(isShowingSequence) {
+        if(isShowingSequence && !isGameOver)
+        {
+            delay(300L)
 
-            Spacer(modifier = Modifier.height(8.dp))
+            isClickable = false
 
-            GridSixButtonsLayout(
-                modifier = Modifier
-                    .weight(2f)
-                    .fillMaxWidth()) { letter ->
-                    sequence += if (sequence.isEmpty()) letter else ",$letter"
+            if (resumeIndex == 0) {
+                generateSequence()
             }
 
-            ColorText(
-                Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(10.dp)
-                    .verticalScroll(scrollState),
-                sequence
-            )
+            sequence = ""
 
-            ActionButtons(
-                {
-                    val s = sequence
-                    sequence = ""
-                    onFinishClicked(s)
-                })
+            delay(200L)
+
+            for (i in resumeIndex until GamesData.randomSequence.size) {
+                resumeIndex = i
+                activeButton = GamesData.randomSequence[i]
+                delay(700L)
+
+                activeButton = null
+                delay(400L)
+            }
+
+            resumeIndex = 0
+            isShowingSequence = false
+            isClickable = true
         }
     }
-    else {
-        Column(
-            Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                fontFamily = TitleFont,
-                fontSize = 55.sp,
-                letterSpacing = 3.sp,
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                        append(
-                            "S"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                        append(
-                            "i"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                        append(
-                            "m"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {
-                        append(
-                            "o"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {
-                        append(
-                            "n "
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                        append(
-                            "S"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                        append(
-                            "i"
-                        )
-                    }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                        append(
-                            "x"
-                        )
-                    }
-                }
-            )
 
-            Row(
+    //to know if it is the computer's or the player's turn after a configuration change
+    LaunchedEffect(Unit) {
+        if (!isGameOver && !isShowingSequence && GamesData.randomSequence.isNotEmpty()) {
+            val alreadyPressed = sequence.count { it != ',' }
+
+            if (alreadyPressed < GamesData.randomSequence.size) {
+                isClickable = true
+            } else {
+                isShowingSequence = true
+            }
+        }
+    }
+
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(start = 50.dp, bottom = 25.dp, top=25.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                Text(
+                    fontFamily = TitleFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 55.sp,
+                    letterSpacing = 3.sp,
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
+                            append(
+                                "S"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
+                            append(
+                                "i"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
+                            append(
+                                "m"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {
+                            append(
+                                "o"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {
+                            append(
+                                "n "
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
+                            append(
+                                "S"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
+                            append(
+                                "i"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
+                            append(
+                                "x"
+                            )
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Box(modifier = Modifier.weight(2f),
+                    contentAlignment = Alignment.Center) {
                 GridSixButtonsLayout(
                     modifier = Modifier
-                        .weight(2f)
-                        .fillMaxHeight()
+                        //.weight(2f)
+                        .fillMaxWidth(),
+                    activeButton = activeButton,
+                    isClickable
                 ) { letter ->
+                    isGameOver = check(letter, sequence.count { it != ',' })
                     sequence += if (sequence.isEmpty()) letter else ",$letter"
+                    //computer
+                    isShowingSequence = sequence.count { it != ',' } == GamesData.randomSequence.size
                 }
 
-                Column(
-                    modifier = Modifier
-                        .weight(2f)
-                        .fillMaxHeight()
-                ) {
+                if(isGameOver){
+                    //disabled all button
+                    isPause = false
+                    isStart = false
+                    isFinish = false
+                    isClickable = false
 
-                    ColorText(
-                        Modifier
-                            .weight(1f)
+                    Text(
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .padding(10.dp)
-                            .verticalScroll(scrollState),
-                        sequence
+                            .padding(32.dp)
+                            .background(
+                                Color.DarkGray.copy(0.5f),
+                                shape = RoundedCornerShape(12.dp)
+                            ),
+                        text = stringResource(R.string.game_over),
+                        fontSize = 70.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = colorResource(R.color.dark_red),
+                        fontFamily = GameOverFont,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 80.sp,
+                        letterSpacing = 10.sp
                     )
+                }}
 
-                    ActionButtons(
-                        {
-                            val s = sequence
-                            sequence = ""
-                            onFinishClicked(s)
+                ColorText(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                        .verticalScroll(scrollState),
+                    sequence
+                )
+
+                ActionButtons(
+                    isStart, isPause, isFinish,
+                    onStartClicked = {
+                        isStart = false
+                        isFinish = true
+                        isShowingSequence = true
+                    },
+                    onFinishClicked = {
+                        val s = sequence
+                        sequence = ""
+
+                        onFinishClicked(s)
+                    }
+                )
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center) {
+            Column(
+                Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    fontFamily = TitleFont,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 55.sp,
+                    letterSpacing = 3.sp,
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
+                            append(
+                                "S"
+                            )
                         }
-                    )
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
+                            append(
+                                "i"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
+                            append(
+                                "m"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {
+                            append(
+                                "o"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {
+                            append(
+                                "n "
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
+                            append(
+                                "S"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
+                            append(
+                                "i"
+                            )
+                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
+                            append(
+                                "x"
+                            )
+                        }
+                    }
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = 50.dp, bottom = 25.dp, top = 25.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    GridSixButtonsLayout(
+                        modifier = Modifier
+                            .weight(2f)
+                            .fillMaxHeight(),
+                        activeButton = activeButton,
+                        isClickable
+                    ) { letter ->
+                        isGameOver = check(letter, sequence.count { it != ',' })
+                        sequence += if (sequence.isEmpty()) letter else ",$letter"
+
+                        //computer
+                        isShowingSequence = sequence.count { it != ',' } == GamesData.randomSequence.size
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(2f)
+                            .fillMaxHeight()
+                    ) {
+
+                        ColorText(
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .verticalScroll(scrollState),
+                            sequence
+                        )
+
+                        ActionButtons(
+                            isStart, isPause, isFinish,
+                            onStartClicked = {
+                                isStart = false
+                                isFinish = true
+                                isShowingSequence = true
+
+                                generateSequence()
+                            },
+                            onFinishClicked = {
+                                val s = sequence
+                                sequence = ""
+
+                                onFinishClicked(s)
+                            }
+                        )
+                    }
                 }
             }
+
+            if(isGameOver){
+                //disabled all button
+                isPause = false
+                isStart = false
+                isFinish = false
+                isClickable = true
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(32.dp)
+                        .background(Color.DarkGray.copy(0.5f), shape = RoundedCornerShape(12.dp)),
+                    text = stringResource(R.string.game_over),
+                    fontSize = 70.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(R.color.dark_red),
+                    fontFamily = GameOverFont,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 80.sp,
+                    letterSpacing = 10.sp
+                )
+            }}
         }
     }
-}
+//}
 
 // Displays the six button in a grid 2x3.
 @Composable
-private fun GridSixButtonsLayout(modifier: Modifier, onColorClicked:(String)->Unit)
+private fun GridSixButtonsLayout(modifier: Modifier, activeButton: String?, isClickable: Boolean, onColorClicked:(String)->Unit)
 {
+    var pressedButton by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(pressedButton) {
+        if (pressedButton != null) {
+            delay(300L)
+            pressedButton = null
+        }
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -227,18 +412,44 @@ private fun GridSixButtonsLayout(modifier: Modifier, onColorClicked:(String)->Un
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.red)),
-                onClick = { onColorClicked("R") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "R" -> Color.Red
+                        else -> colorResource(id = R.color.red)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "R" -> Color.Red
+                        else -> colorResource(id = R.color.red).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "R"
+                    onColorClicked("R")
+                }
             ){}
 
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.magenta)),
-                onClick = { onColorClicked("M") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "M" -> Color.Magenta
+                        else -> colorResource(id = R.color.magenta)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "M" -> Color.Magenta
+                        else -> colorResource(id = R.color.magenta).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "M"
+                    onColorClicked("M")
+                }
             ){}
         }
 
@@ -252,18 +463,44 @@ private fun GridSixButtonsLayout(modifier: Modifier, onColorClicked:(String)->Un
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.green)),
-                onClick = { onColorClicked("G") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "G" -> Color.Green
+                        else -> colorResource(id = R.color.green)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "G" -> Color.Green
+                        else -> colorResource(id = R.color.green).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "G"
+                    onColorClicked("G")
+                }
             ){}
 
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.yellow)),
-                onClick = { onColorClicked("Y") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "Y" -> Color.Yellow
+                        else -> colorResource(id = R.color.yellow)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "Y" -> Color.Yellow
+                        else -> colorResource(id = R.color.yellow).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "Y"
+                    onColorClicked("Y")
+                }
             ){}
         }
 
@@ -277,18 +514,44 @@ private fun GridSixButtonsLayout(modifier: Modifier, onColorClicked:(String)->Un
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.cyan)),
-                onClick = { onColorClicked("C") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "C" -> Color.Cyan
+                        else -> colorResource(id = R.color.cyan)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "C" -> Color.Cyan
+                        else -> colorResource(id = R.color.cyan).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "C"
+                    onColorClicked("C")
+                }
             ){}
 
             Button(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
+                enabled = isClickable,
                 shape = RoundedCornerShape(8.dp),
-                colors = buttonColors(colorResource(id = R.color.blue)),
-                onClick = { onColorClicked("B") }
+                colors = buttonColors(
+                    containerColor = when{
+                        pressedButton == "B" -> Color.Blue
+                        else -> colorResource(id = R.color.blue)
+                    },
+                    disabledContainerColor = when{
+                        activeButton == "B" -> Color.Blue
+                        else -> colorResource(id = R.color.blue).copy(alpha = 0.65f)
+                    }
+                ),
+                onClick = {
+                    pressedButton = "B"
+                    onColorClicked("B")
+                }
             ) {}
         }
     }
@@ -327,8 +590,8 @@ public fun ColorText(modifier: Modifier, sequence: String) {
 // Pause button -> stop the game
 // Finish button -> finish the sequence and go to other screen
 @Composable
-private fun ActionButtons(onFinishClicked:() -> Unit){
-    
+private fun ActionButtons(isStart: Boolean, isPause: Boolean, isFinish: Boolean, onStartClicked: () -> Unit, onFinishClicked:() -> Unit){
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -337,13 +600,13 @@ private fun ActionButtons(onFinishClicked:() -> Unit){
         //START GAME
         Button(
             modifier = Modifier.size(70.dp),
+            enabled = isStart,
             contentPadding = PaddingValues(0.dp),
             shape = CircleShape,
             colors = buttonColors(
                 colorResource(id = R.color.red),
                 Color.White),
-            //TODO implementare avvia partita
-            onClick = { }
+            onClick = onStartClicked
         ) {
             Column (horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
@@ -362,11 +625,12 @@ private fun ActionButtons(onFinishClicked:() -> Unit){
         //PAUSA
         Button(
             modifier = Modifier.size(70.dp),
+            enabled = isPause,
             contentPadding = PaddingValues(0.dp),
             shape = CircleShape,
             colors = buttonColors(Color.LightGray),
             //TODO implementare stop partita
-            onClick = { }
+            onClick = {  }
         ) {
             Column (horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
@@ -385,12 +649,14 @@ private fun ActionButtons(onFinishClicked:() -> Unit){
         //FINISH
         Button(
             modifier = Modifier.size(70.dp),
+            enabled = isFinish,
             contentPadding = PaddingValues(0.dp),
             shape = CircleShape,
             colors = buttonColors(
                 colorResource(id = R.color.emerald),
                 Color.White
             ),
+            //TODO implementare fine partita
             onClick = onFinishClicked
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -408,4 +674,17 @@ private fun ActionButtons(onFinishClicked:() -> Unit){
             }
         }
     }
+}
+
+private fun generateSequence() {
+    val list = listOf("R", "Y", "G", "C", "B", "M")
+
+    GamesData.randomSequence.add(list.random())
+
+    Log.d("StartGame", "Sequenza generata: ${GamesData.randomSequence}")
+
+}
+
+private fun check(letter: String, index:Int) : Boolean{
+    return GamesData.randomSequence[index] != letter
 }

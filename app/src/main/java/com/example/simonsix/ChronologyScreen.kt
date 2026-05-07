@@ -66,6 +66,7 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
             Text(
                 fontFamily = TitleFont,
                 fontSize = 55.sp,
+                fontWeight = FontWeight.Bold,
                 letterSpacing = 3.sp,
                 text = buildAnnotatedString {
                     withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
