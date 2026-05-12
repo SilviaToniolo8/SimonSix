@@ -12,6 +12,7 @@
     <string name="error_button">Pulsante sbagliato</string>
 
     <string name="game_over">Game Over</string>
+    <string name="resume">Riprendi</string>
 
     <string name="cancel">Cancella</string>
     <string name="finish">Fine partita</string>

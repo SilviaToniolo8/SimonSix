@@ -77,7 +77,8 @@ fun DetailsGameScreen (game: String)
                 .safeDrawingPadding()
                 .padding(10.dp)
                 .verticalScroll(scrollState),
-            game
+            game,
+            false
         )
     }
 }

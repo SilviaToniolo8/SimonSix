@@ -49,27 +49,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simonsix.ui.theme.GameOverFont
 import com.example.simonsix.ui.theme.TextFont
 import com.example.simonsix.ui.theme.TitleFont
-import kotlin.text.count
 
 @Composable
-fun GameScreen(onFinishClicked: (String) -> Unit)
+fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onFinishClicked: (String) -> Unit)
 {
     val orientation = LocalConfiguration.current.orientation
-
-    var sequence by rememberSaveable { mutableStateOf("") }
-
-    var activeButton by rememberSaveable { mutableStateOf<String?>(null) }
-    var isShowingSequence by rememberSaveable { mutableStateOf(false) }
-    var isGameOver by rememberSaveable { mutableStateOf(false) }
-    var isClickable by rememberSaveable { mutableStateOf(false) }
-    var resumeIndex by rememberSaveable { mutableIntStateOf(0) }
-
-    var isStart by rememberSaveable { mutableStateOf(true)}
-    var isPause by rememberSaveable { mutableStateOf(false)}
-    var isFinish by rememberSaveable { mutableStateOf(false)}
 
     // scrollState is used to remember the current scroll position
     // https://developer.android.com/develop/ui/compose/touch-input/scroll/scroll-modifiers
@@ -77,133 +66,46 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
 
     // Each time the sequence grows, the scroll automatically scrolls to the bottom. So the last color added is always visible.
     //https://developer.android.com/reference/kotlin/androidx/compose/runtime/LaunchedEffect.composable
-    LaunchedEffect(sequence) { scrollState.animateScrollTo(scrollState.maxValue) }
+    LaunchedEffect(game.sequence) { scrollState.animateScrollTo(scrollState.maxValue) }
 
-    //computer
-    LaunchedEffect(isShowingSequence) {
-        if(isShowingSequence && !isGameOver)
-        {
-            delay(300L)
+    if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Text(
+                fontFamily = TitleFont,
+                fontWeight = FontWeight.Bold,
+                fontSize = 55.sp,
+                letterSpacing = 3.sp,
+                text = buildAnnotatedString {
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
+                }
+            )
 
-            isClickable = false
+            Spacer(modifier = Modifier.height(8.dp))
 
-            if (resumeIndex == 0) {
-                generateSequence()
-            }
-
-            sequence = ""
-
-            delay(200L)
-
-            for (i in resumeIndex until GamesData.randomSequence.size) {
-                resumeIndex = i
-                activeButton = GamesData.randomSequence[i]
-                delay(700L)
-
-                activeButton = null
-                delay(400L)
-            }
-
-            resumeIndex = 0
-            isShowingSequence = false
-            isClickable = true
-        }
-    }
-
-    //to know if it is the computer's or the player's turn after a configuration change
-    LaunchedEffect(Unit) {
-        if (!isGameOver && !isShowingSequence && GamesData.randomSequence.isNotEmpty()) {
-            val alreadyPressed = sequence.count { it != ',' }
-
-            if (alreadyPressed < GamesData.randomSequence.size) {
-                isClickable = true
-            } else {
-                isShowingSequence = true
-            }
-        }
-    }
-
-        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(
-                    fontFamily = TitleFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 55.sp,
-                    letterSpacing = 3.sp,
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                            append(
-                                "S"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                            append(
-                                "i"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                            append(
-                                "m"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {
-                            append(
-                                "o"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {
-                            append(
-                                "n "
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                            append(
-                                "S"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                            append(
-                                "i"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                            append(
-                                "x"
-                            )
-                        }
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(modifier = Modifier.weight(2f),
-                    contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier.weight(2f),
+                contentAlignment = Alignment.Center) {
                 GridSixButtonsLayout(
                     modifier = Modifier
-                        //.weight(2f)
                         .fillMaxWidth(),
-                    activeButton = activeButton,
-                    isClickable
-                ) { letter ->
-                    isGameOver = check(letter, sequence.count { it != ',' })
-                    sequence += if (sequence.isEmpty()) letter else ",$letter"
-                    //computer
-                    isShowingSequence = sequence.count { it != ',' } == GamesData.randomSequence.size
-                }
+                    activeButton = game.activeButton,
+                    isClickable = game.isGridEnabled,
+                    onColorClicked = onColorClicked
+                )
 
-                if(isGameOver){
-                    //disabled all button
-                    isPause = false
-                    isStart = false
-                    isFinish = false
-                    isClickable = false
-
+                if(game.isGameOver){
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -223,33 +125,27 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
                     )
                 }}
 
-                ColorText(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .verticalScroll(scrollState),
-                    sequence
-                )
+            ColorText(
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .verticalScroll(scrollState),
+                game.sequence,
+                game.isGameOver
+            )
 
-                ActionButtons(
-                    isStart, isPause, isFinish,
-                    onStartClicked = {
-                        isStart = false
-                        isFinish = true
-                        isShowingSequence = true
-                    },
-                    onFinishClicked = {
-                        val s = sequence
-                        sequence = ""
-
-                        onFinishClicked(s)
-                    }
-                )
-            }
-        } else {
-            Box(modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center) {
+            ActionButtons(
+                game.isStartEnabled,
+                game.isPauseEnabled,
+                game.isFinishEnabled,
+                onStartClicked = onStartClicked,
+                onFinishClicked = { }
+            )
+        }
+    } else {
+        Box(modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center) {
             Column(
                 Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -260,46 +156,14 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
                     fontSize = 55.sp,
                     letterSpacing = 3.sp,
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                            append(
-                                "S"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                            append(
-                                "i"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                            append(
-                                "m"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {
-                            append(
-                                "o"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {
-                            append(
-                                "n "
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {
-                            append(
-                                "S"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {
-                            append(
-                                "i"
-                            )
-                        }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {
-                            append(
-                                "x"
-                            )
-                        }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
+                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
                     }
                 )
 
@@ -313,16 +177,10 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
                         modifier = Modifier
                             .weight(2f)
                             .fillMaxHeight(),
-                        activeButton = activeButton,
-                        isClickable
-                    ) { letter ->
-                        isGameOver = check(letter, sequence.count { it != ',' })
-                        sequence += if (sequence.isEmpty()) letter else ",$letter"
-
-                        //computer
-                        isShowingSequence = sequence.count { it != ',' } == GamesData.randomSequence.size
-                    }
-
+                        activeButton = game.activeButton,
+                        isClickable = game.isGridEnabled,
+                        onColorClicked = onColorClicked
+                    )
                     Column(
                         modifier = Modifier
                             .weight(2f)
@@ -335,36 +193,22 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
                                 .fillMaxWidth()
                                 .padding(10.dp)
                                 .verticalScroll(scrollState),
-                            sequence
+                            game.sequence,
+                            game.isGameOver
                         )
 
                         ActionButtons(
-                            isStart, isPause, isFinish,
-                            onStartClicked = {
-                                isStart = false
-                                isFinish = true
-                                isShowingSequence = true
-
-                                generateSequence()
-                            },
-                            onFinishClicked = {
-                                val s = sequence
-                                sequence = ""
-
-                                onFinishClicked(s)
-                            }
+                            game.isStartEnabled,
+                            game.isPauseEnabled,
+                            game.isFinishEnabled,
+                            onStartClicked = onStartClicked,
+                            onFinishClicked = { }
                         )
                     }
                 }
             }
 
-            if(isGameOver){
-                //disabled all button
-                isPause = false
-                isStart = false
-                isFinish = false
-                isClickable = true
-
+            if(game.isGameOver){
                 Text(
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -379,10 +223,10 @@ fun GameScreen(onFinishClicked: (String) -> Unit)
                     lineHeight = 80.sp,
                     letterSpacing = 10.sp
                 )
-            }}
+            }
         }
     }
-//}
+}
 
 // Displays the six button in a grid 2x3.
 @Composable
@@ -562,7 +406,7 @@ private fun GridSixButtonsLayout(modifier: Modifier, activeButton: String?, isCl
 // The Color is constructed by ARGB because SpanStyle doesn't directly accept a Compose Color.
 //https://developer.android.com/develop/ui/compose/text/style-text#multiple-styles
 @Composable
-public fun ColorText(modifier: Modifier, sequence: String) {
+fun ColorText(modifier: Modifier, sequence: String, isGameOver: Boolean) {
     Text(
         modifier = modifier,
         fontSize = 50.sp,
@@ -570,8 +414,11 @@ public fun ColorText(modifier: Modifier, sequence: String) {
         fontWeight = FontWeight.Bold,
         lineHeight = 40.sp,
         text = buildAnnotatedString {
-            for (c in sequence) {
-                when (c) {
+            for ((index, c) in sequence.withIndex()) {
+                if (isGameOver && index == sequence.length-1){
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.gray).toArgb()))) {append(c.lowercase())}
+                }
+                else when (c) {
                     'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("r")}
                     'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("y")}
                     'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("g")}
@@ -633,16 +480,16 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isFinish: Boolean,
             onClick = {  }
         ) {
             Column (horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                imageVector = Icons.Filled.Pause,
-                contentDescription = null
-            )
+                Icon(
+                    imageVector = Icons.Filled.Pause,
+                    contentDescription = null
+                )
 
-            Text(
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                text = stringResource(R.string.pause)
-            )
+                Text(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    text = stringResource(R.string.pause)
+                )
             }
         }
 
@@ -674,17 +521,4 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isFinish: Boolean,
             }
         }
     }
-}
-
-private fun generateSequence() {
-    val list = listOf("R", "Y", "G", "C", "B", "M")
-
-    GamesData.randomSequence.add(list.random())
-
-    Log.d("StartGame", "Sequenza generata: ${GamesData.randomSequence}")
-
-}
-
-private fun check(letter: String, index:Int) : Boolean{
-    return GamesData.randomSequence[index] != letter
 }

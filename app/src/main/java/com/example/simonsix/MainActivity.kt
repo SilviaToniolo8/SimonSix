@@ -8,7 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -51,12 +54,18 @@ class MainActivity : ComponentActivity(){
                         }
 
                         composable(route = "game") {
+                            val viewModel: GameViewModel = viewModel()
+                            val state by viewModel.uiState.collectAsStateWithLifecycle()
+
                             GameScreen(
+                                state,
+                                onStartClicked = viewModel::onStartClicked,
+                                onColorClicked = viewModel::onColorClicked,
                                 onFinishClicked = { seq ->
                                     // The new sequence is inserted at the top of the list so the most recent one always appears first
-                                    GamesData.previousGames.add(0, seq)
+                                    viewModel.previousGames.add(0, seq)
                                     navController.navigate("chronology"){
-                                    popUpTo(route = "chronology")}
+                                        popUpTo(route = "chronology")}
                                 }
                             )
                         }

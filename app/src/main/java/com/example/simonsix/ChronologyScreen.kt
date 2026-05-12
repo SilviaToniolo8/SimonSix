@@ -94,35 +94,35 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
                         Card(modifier = Modifier
                             .fillMaxSize()
                             .padding(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .padding(30.dp).fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .padding(30.dp).fillMaxSize(),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.Center
-                                ) {
-                                    Icon(
-                                        Icons.Default.SportsEsports,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(56.dp),
-                                        tint = Color.LightGray
-                                    )
+                                Icon(
+                                    Icons.Default.SportsEsports,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(56.dp),
+                                    tint = Color.LightGray
+                                )
 
-                                    Spacer(Modifier.height(12.dp))
-                                    Text(
-                                        text = stringResource(R.string.no_games_yet),
-                                        fontSize = 20.sp,
-                                        textAlign = TextAlign.Center
-                                    )
+                                Spacer(Modifier.height(12.dp))
+                                Text(
+                                    text = stringResource(R.string.no_games_yet),
+                                    fontSize = 20.sp,
+                                    textAlign = TextAlign.Center
+                                )
 
-                                    Text(
-                                        modifier = Modifier.padding(8.dp),
-                                        text = stringResource(R.string.click_play),
-                                        fontSize = 16.sp,
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
+                                Text(
+                                    modifier = Modifier.padding(8.dp),
+                                    text = stringResource(R.string.click_play),
+                                    fontSize = 16.sp,
+                                    textAlign = TextAlign.Center
+                                )
                             }
+                        }
 
                     }
                 } else {
