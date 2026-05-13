@@ -2,6 +2,7 @@ package com.example.simonsix
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -61,6 +62,7 @@ class MainActivity : ComponentActivity(){
                                 state,
                                 onStartClicked = viewModel::onStartClicked,
                                 onColorClicked = viewModel::onColorClicked,
+                                onPauseClicked = viewModel::onPauseClicked,
                                 onFinishClicked = { seq ->
                                     // The new sequence is inserted at the top of the list so the most recent one always appears first
                                     viewModel.previousGames.add(0, seq)

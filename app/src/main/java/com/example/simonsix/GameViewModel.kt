@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.text.count
 import kotlin.text.isEmpty
@@ -16,12 +17,13 @@ import kotlin.text.isEmpty
 data class GameUiState (
     val sequence: String = "",              // sequence of buttons clicked by the player
     val isStartEnabled: Boolean = true,     // indicates whether the Start button can be pressed
-    val isShowingSequence: Boolean = false,  // indicates whether the sequence should be shown
     val isPauseEnabled: Boolean = false,    // indicates whether the Pause button can be pressed
     val isFinishEnabled: Boolean = false,   // indicates whether the Finish button can be pressed
     val isGridEnabled: Boolean = false,     // indicates whether the color buttons grid can be pressed
     val activeButton: String? = null,        // the button that change the color
-    val isGameOver: Boolean = false         // indicates if it is game over
+    val isGameOver: Boolean = false,         // indicates if it is game over
+    val isPause: Boolean = false,            // indicates whether it is paused
+    val resumeIndex: Int = 0               // indicates from which index the sequence should restart when it is paused
 )
 
 class GameViewModel : ViewModel() {
@@ -34,25 +36,44 @@ class GameViewModel : ViewModel() {
     // previousGames is the list of sequences already played, shared between screens
     val previousGames = mutableListOf<String>()
 
+   private var currentJob : Job ?= null
+
     fun onStartClicked(){
-        viewModelScope.launch{
+        _uiState.update { currentState ->
+            currentState.copy(
+                isStartEnabled = false
+            )
+        }
+
+        generateSequence()
+
+        playSequence()
+    }
+
+    private fun playSequence(){
+        currentJob?.cancel()
+
+        currentJob = viewModelScope.launch{
             //--- stato iniziale dei pulsanti ---
             _uiState.update { currentState ->
                 currentState.copy(
                     sequence = "",
-                    isStartEnabled = false,
                     isGridEnabled = false,
-                    isShowingSequence = true
+                    isPauseEnabled = true
                 )
             }
 
             //--- pulsanti illuminati ---
 
             delay(300L)
-            generateSequence()
 
-            for (i in 0 until randomSequence.size){
-                _uiState.update { currentState -> currentState.copy(activeButton = randomSequence[i]) }
+            for (i in _uiState.value.resumeIndex until randomSequence.size){
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        activeButton = randomSequence[i],
+                        resumeIndex = i
+                    )
+                }
                 delay(700L)
 
                 _uiState.update { currentState -> currentState.copy(activeButton = null) }
@@ -62,12 +83,40 @@ class GameViewModel : ViewModel() {
             //--- stato finale dei pulsanti ---
             _uiState.update { currentState ->
                 currentState.copy(
-                    isShowingSequence = false,
-                    isGridEnabled = true
+                    isGridEnabled = true,
+                    isPauseEnabled = false,
+                    resumeIndex = 0
                 )
             }
         }
     }
+
+    fun onPauseClicked(){
+        _uiState.update { currentState -> currentState.copy(isPause = !_uiState.value.isPause) }
+
+        // pause
+        if(_uiState.value.isPause){
+            _uiState.update { currentState -> currentState.copy(resumeIndex = _uiState.value.resumeIndex + 1)}
+            currentJob?.cancel()
+        } else {    //resume
+            playSequence()
+        }
+        /*currentJob?.cancel()
+
+        currentJob = viewModelScope.launch{
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isPause = !_uiState.value.isPause
+                )
+            }
+            Log.d("StartGame","isPause: ${_uiState.value.isPause}")
+            // resume
+            if (!_uiState.value.isPause) {
+                playSequence()
+            }
+        }*/
+    }
+
 
     fun onColorClicked(letter: String){
         _uiState.update { currentState ->
@@ -83,6 +132,9 @@ class GameViewModel : ViewModel() {
             _uiState.update { currentState ->
                 currentState.copy(
                     isGridEnabled = false,
+                    activeButton = null,
+                    isPauseEnabled = false,
+                    isPause = false,
                     isStartEnabled = false
                 )}
         }
@@ -91,6 +143,7 @@ class GameViewModel : ViewModel() {
             viewModelScope.launch{delay(500L)
                 onStartClicked()}}
     }
+
     private fun generateSequence() {
         val list = listOf("R", "Y", "G", "C", "B", "M")
 

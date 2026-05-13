@@ -56,7 +56,7 @@ import com.example.simonsix.ui.theme.TextFont
 import com.example.simonsix.ui.theme.TitleFont
 
 @Composable
-fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onFinishClicked: (String) -> Unit)
+fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onPauseClicked: () -> Unit, onFinishClicked: (String) -> Unit)
 {
     val orientation = LocalConfiguration.current.orientation
 
@@ -138,8 +138,10 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
             ActionButtons(
                 game.isStartEnabled,
                 game.isPauseEnabled,
+                game.isPause,
                 game.isFinishEnabled,
                 onStartClicked = onStartClicked,
+                onPauseClicked = onPauseClicked,
                 onFinishClicked = { }
             )
         }
@@ -200,8 +202,10 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
                         ActionButtons(
                             game.isStartEnabled,
                             game.isPauseEnabled,
+                            game.isPause,
                             game.isFinishEnabled,
                             onStartClicked = onStartClicked,
+                            onPauseClicked = onPauseClicked,
                             onFinishClicked = { }
                         )
                     }
@@ -437,7 +441,7 @@ fun ColorText(modifier: Modifier, sequence: String, isGameOver: Boolean) {
 // Pause button -> stop the game
 // Finish button -> finish the sequence and go to other screen
 @Composable
-private fun ActionButtons(isStart: Boolean, isPause: Boolean, isFinish: Boolean, onStartClicked: () -> Unit, onFinishClicked:() -> Unit){
+private fun ActionButtons(isStart: Boolean, isPause: Boolean, isPauseClicked: Boolean, isFinish: Boolean, onStartClicked: () -> Unit, onPauseClicked: () -> Unit, onFinishClicked:() -> Unit){
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -476,19 +480,19 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isFinish: Boolean,
             contentPadding = PaddingValues(0.dp),
             shape = CircleShape,
             colors = buttonColors(Color.LightGray),
-            //TODO implementare stop partita
-            onClick = {  }
+            onClick = onPauseClicked
         ) {
             Column (horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
-                    imageVector = Icons.Filled.Pause,
+                    imageVector = if(isPauseClicked) Icons.Filled.PlayArrow else Icons.Filled.Pause,
                     contentDescription = null
                 )
 
                 Text(
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    text = stringResource(R.string.pause)
+                    text =  if(isPauseClicked) stringResource(R.string.resume) else stringResource(R.string.pause),
+
                 )
             }
         }
