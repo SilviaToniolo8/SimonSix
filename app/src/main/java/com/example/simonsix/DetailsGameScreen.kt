@@ -52,7 +52,8 @@ fun DetailsGameScreen (game: String)
                     modifier = Modifier.padding(8.dp)
                 )
 
-                Text(text= game.count { it != ',' }.toString(),
+                Text(
+                    text = game.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
                     modifier = Modifier.padding(8.dp)
                 )
             }

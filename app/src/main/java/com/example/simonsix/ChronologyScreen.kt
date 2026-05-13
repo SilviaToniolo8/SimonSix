@@ -134,7 +134,7 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
                         ) {
                             Text(
                                 modifier = Modifier.width(48.dp).padding(start=8.dp),
-                                text = game.count { it != ',' }.toString(),
+                                text = game.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
                                 fontSize = 20.sp
                             )
 

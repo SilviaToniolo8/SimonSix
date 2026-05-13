@@ -56,7 +56,7 @@ import com.example.simonsix.ui.theme.TextFont
 import com.example.simonsix.ui.theme.TitleFont
 
 @Composable
-fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onPauseClicked: () -> Unit, onFinishClicked: (String) -> Unit)
+fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onPauseClicked: () -> Unit, onFinishClicked: () -> Unit)
 {
     val orientation = LocalConfiguration.current.orientation
 
@@ -142,7 +142,7 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
                 game.isFinishEnabled,
                 onStartClicked = onStartClicked,
                 onPauseClicked = onPauseClicked,
-                onFinishClicked = { }
+                onFinishClicked = onFinishClicked
             )
         }
     } else {
@@ -206,7 +206,7 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
                             game.isFinishEnabled,
                             onStartClicked = onStartClicked,
                             onPauseClicked = onPauseClicked,
-                            onFinishClicked = { }
+                            onFinishClicked = onFinishClicked
                         )
                     }
                 }

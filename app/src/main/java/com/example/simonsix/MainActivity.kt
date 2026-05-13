@@ -63,9 +63,11 @@ class MainActivity : ComponentActivity(){
                                 onStartClicked = viewModel::onStartClicked,
                                 onColorClicked = viewModel::onColorClicked,
                                 onPauseClicked = viewModel::onPauseClicked,
-                                onFinishClicked = { seq ->
-                                    // The new sequence is inserted at the top of the list so the most recent one always appears first
-                                    viewModel.previousGames.add(0, seq)
+                                onFinishClicked = {
+                                    Log.d("StartGame", "before view model")
+                                    viewModel.onFinishClicked()
+
+                                    Log.d("StartGame", "before navigate")
                                     navController.navigate("chronology"){
                                         popUpTo(route = "chronology")}
                                 }

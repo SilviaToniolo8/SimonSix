@@ -33,6 +33,8 @@ class GameViewModel : ViewModel() {
 
     val randomSequence = mutableListOf<String>()
 
+    var isFirstSequence = true
+
     // previousGames is the list of sequences already played, shared between screens
     val previousGames = mutableListOf<String>()
 
@@ -41,13 +43,71 @@ class GameViewModel : ViewModel() {
     fun onStartClicked(){
         _uiState.update { currentState ->
             currentState.copy(
-                isStartEnabled = false
+                isStartEnabled = false,
+                isFinishEnabled = true
             )
         }
 
         generateSequence()
 
         playSequence()
+    }
+
+    fun onPauseClicked(){
+        _uiState.update { currentState -> currentState.copy(isPause = !_uiState.value.isPause) }
+
+        // pause
+        if(_uiState.value.isPause){
+            _uiState.update { currentState -> currentState.copy(resumeIndex = _uiState.value.resumeIndex + 1)}
+            currentJob?.cancel()
+
+        } else {    //resume
+            playSequence()
+        }
+    }
+
+    fun onFinishClicked(){
+        currentJob?.cancel()
+
+        if (!isFirstSequence)
+            GamesData.previousGames.add(0, randomSequence.toString())
+    }
+
+    fun onColorClicked(letter: String){
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                sequence = _uiState.value.sequence + if (_uiState.value.sequence.isEmpty()) letter else ",$letter",
+
+                // check if the last letter of the sequence is different from the button letter
+                isGameOver = randomSequence[_uiState.value.sequence.count { it != ',' }] != letter
+            )}
+
+        // update the state if is game over
+        if(_uiState.value.isGameOver) {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isGridEnabled = false,
+                    activeButton = null,
+                    isPauseEnabled = false,
+                    isPause = false,
+                    isStartEnabled = false,
+                    isFinishEnabled = false
+                )}
+        }
+
+        else if(_uiState.value.sequence.count { it != ',' } == randomSequence.size){
+            viewModelScope.launch{delay(500L)
+                onStartClicked()}}
+    }
+
+    private fun generateSequence() {
+        val list = listOf("R", "Y", "G", "C", "B", "M")
+
+        randomSequence.add(list.random())
+
+        Log.d("StartGame", "Sequenza generata: ${randomSequence}")
+
     }
 
     private fun playSequence(){
@@ -88,68 +148,8 @@ class GameViewModel : ViewModel() {
                     resumeIndex = 0
                 )
             }
+
+            isFirstSequence = false
         }
-    }
-
-    fun onPauseClicked(){
-        _uiState.update { currentState -> currentState.copy(isPause = !_uiState.value.isPause) }
-
-        // pause
-        if(_uiState.value.isPause){
-            _uiState.update { currentState -> currentState.copy(resumeIndex = _uiState.value.resumeIndex + 1)}
-            currentJob?.cancel()
-        } else {    //resume
-            playSequence()
-        }
-        /*currentJob?.cancel()
-
-        currentJob = viewModelScope.launch{
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isPause = !_uiState.value.isPause
-                )
-            }
-            Log.d("StartGame","isPause: ${_uiState.value.isPause}")
-            // resume
-            if (!_uiState.value.isPause) {
-                playSequence()
-            }
-        }*/
-    }
-
-
-    fun onColorClicked(letter: String){
-        _uiState.update { currentState ->
-            currentState.copy(
-                sequence = _uiState.value.sequence + if (_uiState.value.sequence.isEmpty()) letter else ",$letter",
-
-                // check if the last letter of the sequence is different from the button letter
-                isGameOver = randomSequence[_uiState.value.sequence.count { it != ',' }] != letter
-            )}
-
-        // update the state if is game over
-        if(_uiState.value.isGameOver) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isGridEnabled = false,
-                    activeButton = null,
-                    isPauseEnabled = false,
-                    isPause = false,
-                    isStartEnabled = false
-                )}
-        }
-
-        else if(_uiState.value.sequence.count { it != ',' } == randomSequence.size){
-            viewModelScope.launch{delay(500L)
-                onStartClicked()}}
-    }
-
-    private fun generateSequence() {
-        val list = listOf("R", "Y", "G", "C", "B", "M")
-
-        randomSequence.add(list.random())
-
-        Log.d("StartGame", "Sequenza generata: ${randomSequence}")
-
     }
 }
