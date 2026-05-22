@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -37,10 +37,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.simonsix.ui.theme.TextFont
 import com.example.simonsix.ui.theme.TitleFont
 
 @Composable
-fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
+fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicked: (Game) -> Unit) {
     Scaffold(
         floatingActionButton = {FloatingActionButton(
             shape = CircleShape,
@@ -63,6 +64,7 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
             verticalArrangement = Arrangement.Center
         ) {
 
+            //--- TITLE ---
             Text(
                 fontFamily = TitleFont,
                 fontSize = 55.sp,
@@ -89,7 +91,7 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 //---EMPTY STATE---
-                if (GamesData.previousGames.isEmpty()) {
+                if (previousGames.isEmpty()) {
                     item {
                         Card(modifier = Modifier
                             .fillMaxSize()
@@ -126,7 +128,8 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
 
                     }
                 } else {
-                    itemsIndexed(items = GamesData.previousGames) { index, game ->
+                    items(previousGames) { game ->
+                    //itemsIndexed(items = previousGames) { index, game ->
                         Row(
                             Modifier.fillMaxWidth()
                                 .clickable(onClick = {onGameClicked(game)}),
@@ -134,29 +137,22 @@ fun ChronologyScreen(onPlay: () -> Unit, onGameClicked: (String) -> Unit) {
                         ) {
                             Text(
                                 modifier = Modifier.width(48.dp).padding(start=8.dp),
-                                text = game.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
+                                text = game.sequence.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
                                 fontSize = 20.sp
                             )
 
-                            Text(
-                                modifier = Modifier
-                                    .weight(1f)
+                            ColorTextItem(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .safeDrawingPadding()
                                     .padding(10.dp),
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold,
-                                lineHeight = 35.sp,
-                                letterSpacing = 5.sp,
-                                overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
-                                text = game,
-                                color = chooseColor(index)
+                                game
                             )
                         }
                     }
                 }
             }
         }
-
     }
 }
 
@@ -175,4 +171,32 @@ private fun chooseColor(index: Int): Color
     )
 
     return colors[index % colors.size]
+}
+
+@Composable
+fun ColorTextItem(modifier: Modifier, game: Game) {
+    Text(
+        modifier = modifier,
+        fontSize = 50.sp,
+        fontFamily = TextFont,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        text = buildAnnotatedString {
+            for ((index, c) in game.sequence.withIndex()) {
+                if (index >= game.errorIndex && index != game.sequence.length){
+                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.gray).toArgb()))) {append(c.lowercase())}
+                }
+                else when (c) {
+                    'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("r")}
+                    'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("y")}
+                    'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("g")}
+                    'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {append("c")}
+                    'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {append("b")}
+                    'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) {append("m")}
+                    ',' -> withStyle(style = SpanStyle(color = Color.White)) {append(",")}
+                }
+            }
+        }
+    )
 }

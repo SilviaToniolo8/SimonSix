@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun DetailsGameScreen (game: String)
+fun DetailsGameScreen (game: Game)
 {
     // scrollState is used to remember the current scroll position
     // https://developer.android.com/develop/ui/compose/touch-input/scroll/scroll-modifiers
@@ -29,14 +29,12 @@ fun DetailsGameScreen (game: String)
     //https://developer.android.com/reference/kotlin/androidx/compose/runtime/LaunchedEffect.composable
     LaunchedEffect(game) { scrollState.animateScrollTo(scrollState.maxValue) }
 
-    //TODO cosa mostrare se uno fa 0
-
     Column(
         Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         Text(
-            text = stringResource(R.string.game),
+            text = stringResource(R.string.game) + " ${game.id}",
             fontSize = 35.sp
         )
 
@@ -53,33 +51,19 @@ fun DetailsGameScreen (game: String)
                 )
 
                 Text(
-                    text = game.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
-                    modifier = Modifier.padding(8.dp)
-                )
-            }
-
-            Card(
-                modifier = Modifier.weight(1f)
-            ){
-                Text(text = stringResource(R.string.error_button),
-                    modifier = Modifier.padding(8.dp)
-                )
-
-                //TODO da implementare l'errore
-                Text(text= "3",
+                    text = game.sequence.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
                     modifier = Modifier.padding(8.dp)
                 )
             }
         }
 
-        ColorText(
+        ColorTextItem(
             Modifier
                 .fillMaxWidth()
                 .safeDrawingPadding()
                 .padding(10.dp)
                 .verticalScroll(scrollState),
-            game,
-            false
+            game
         )
     }
 }

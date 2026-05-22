@@ -1,8 +1,11 @@
 package com.example.simonsix
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,17 +19,19 @@ import kotlin.text.isEmpty
 // data for the ui
 data class GameUiState (
     val sequence: String = "",              // sequence of buttons clicked by the player
+    val isShowingSequence: Boolean = false,// indicates whether the sequence is being shown
     val isStartEnabled: Boolean = true,     // indicates whether the Start button can be pressed
     val isPauseEnabled: Boolean = false,    // indicates whether the Pause button can be pressed
     val isFinishEnabled: Boolean = false,   // indicates whether the Finish button can be pressed
     val isGridEnabled: Boolean = false,     // indicates whether the color buttons grid can be pressed
-    val activeButton: String? = null,        // the button that change the color
-    val isGameOver: Boolean = false,         // indicates if it is game over
-    val isPause: Boolean = false,            // indicates whether it is paused
-    val resumeIndex: Int = 0               // indicates from which index the sequence should restart when it is paused
+    val activeButton: String? = null,       // the button that change the color
+    val isGameOver: Boolean = false,        // indicates if it is game over
+    val isPause: Boolean = false,           // indicates whether it is paused
+    val resumeIndex: Int = 0                // indicates from which index the sequence should restart when it is paused
 )
 
-class GameViewModel : ViewModel() {
+class GameViewModel(application: Application) : AndroidViewModel(application) {
+
     // expose screen UI state
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -35,10 +40,22 @@ class GameViewModel : ViewModel() {
 
     var isFirstSequence = true
 
-    // previousGames is the list of sequences already played, shared between screens
-    val previousGames = mutableListOf<String>()
+    private var currentJob : Job ?= null
 
-   private var currentJob : Job ?= null
+    private val repository: GameRepository
+    val previousGames: LiveData<List<Game>>
+
+    init{
+        val gamesDao = GameRoomDatabase.getDatabase(application, viewModelScope).gameDao()
+        repository = GameRepository(gamesDao)
+        previousGames = repository.allGames
+    }
+
+    fun insert(game: Game) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insert(game)
+    }
+
+    fun getGameById(id: Int): LiveData<Game> = repository.getGameById(id)
 
     fun onStartClicked(){
         _uiState.update { currentState ->
@@ -69,8 +86,18 @@ class GameViewModel : ViewModel() {
     fun onFinishClicked(){
         currentJob?.cancel()
 
-        if (!isFirstSequence)
-            GamesData.previousGames.add(0, randomSequence.toString())
+        if (!isFirstSequence){
+            val strRandomSequence = randomSequence.joinToString(",")
+            //GamesData.previousGames.add(0, strRandomSequence)
+
+            val errorIndex =  if(_uiState.value.isShowingSequence)
+                0
+            else
+                _uiState.value.sequence.count { it != ',' }
+
+            val newGame = Game(0, strRandomSequence, errorIndex)
+            insert(newGame)
+        }
     }
 
     fun onColorClicked(letter: String){
@@ -94,6 +121,9 @@ class GameViewModel : ViewModel() {
                     isStartEnabled = false,
                     isFinishEnabled = false
                 )}
+
+            GamesData.previousGames.add(0, randomSequence.joinToString(","))
+            GamesData.errorIndex = _uiState.value.sequence.count { it != ',' }
         }
 
         else if(_uiState.value.sequence.count { it != ',' } == randomSequence.size){
@@ -119,7 +149,8 @@ class GameViewModel : ViewModel() {
                 currentState.copy(
                     sequence = "",
                     isGridEnabled = false,
-                    isPauseEnabled = true
+                    isPauseEnabled = true,
+                    isShowingSequence = true
                 )
             }
 
@@ -131,7 +162,7 @@ class GameViewModel : ViewModel() {
                 _uiState.update { currentState ->
                     currentState.copy(
                         activeButton = randomSequence[i],
-                        resumeIndex = i
+                        resumeIndex = i,
                     )
                 }
                 delay(700L)
@@ -145,7 +176,8 @@ class GameViewModel : ViewModel() {
                 currentState.copy(
                     isGridEnabled = true,
                     isPauseEnabled = false,
-                    resumeIndex = 0
+                    resumeIndex = 0,
+                    isShowingSequence = false
                 )
             }
 
