@@ -1,6 +1,7 @@
 package com.example.simonsix
 
 import android.app.Application
+import android.media.SoundPool
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.AndroidViewModel
@@ -45,7 +46,21 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: GameRepository
     val previousGames: LiveData<List<Game>>
 
-    init{
+    private val soundPool = SoundPool.Builder()
+        .setMaxStreams(2)
+        .build()
+
+    private val soundMap = mutableMapOf<String, Int>()
+
+    init {
+        // upload the music
+        soundMap["R"] = soundPool.load(application, R.raw.sound_r, 1)
+        soundMap["Y"] = soundPool.load(application, R.raw.sound_y, 1)
+        soundMap["G"] = soundPool.load(application, R.raw.sound_g, 1)
+        soundMap["C"] = soundPool.load(application, R.raw.sound_c, 1)
+        soundMap["B"] = soundPool.load(application, R.raw.sound_b, 1)
+        soundMap["M"] = soundPool.load(application, R.raw.sound_m, 1)
+
         val gamesDao = GameRoomDatabase.getDatabase(application, viewModelScope).gameDao()
         repository = GameRepository(gamesDao)
         previousGames = repository.allGames
@@ -102,6 +117,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onColorClicked(letter: String){
 
+        playSound(letter)
+
         _uiState.update { currentState ->
             currentState.copy(
                 sequence = _uiState.value.sequence + if (_uiState.value.sequence.isEmpty()) letter else ",$letter",
@@ -131,6 +148,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 onStartClicked()}}
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        soundPool.release()
+    }
+
     private fun generateSequence() {
         val list = listOf("R", "Y", "G", "C", "B", "M")
 
@@ -140,6 +162,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
+    private fun playSound(letter: String) {
+        soundMap[letter]?.let { soundId ->
+            soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
+        }
+    }
     private fun playSequence(){
         currentJob?.cancel()
 
@@ -165,6 +192,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         resumeIndex = i,
                     )
                 }
+                playSound(randomSequence[i])
                 delay(700L)
 
                 _uiState.update { currentState -> currentState.copy(activeButton = null) }
