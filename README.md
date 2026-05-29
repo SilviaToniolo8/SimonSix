@@ -9,7 +9,7 @@ Sviluppato in Kotlin con **Jetpack Compose**.
 Simon Six è un'applicazione con due schermate: Game e Chronology. Supporta sia l'orientamento **verticale** che **orizzontale** con un'interfaccia adattiva.
 
 ### Game Screen
-Composta da una **griglia 2x3** di pulsanti colorati che una volta premuti aggiungono alla sequenza il simbolo secondo la tabella a seguire. Il testo viene visualizzato in base al colore premuto. 
+Composta da una **griglia 2x3** di pulsanti colorati che una volta premuti aggiungono alla sequenza il simbolo secondo la tabella a seguire. Il testo viene visualizzato in base al colore premuto.
 
 | Simbolo | Colore  | Hex       |
 |---------|---------|-----------|
@@ -23,7 +23,7 @@ Composta da una **griglia 2x3** di pulsanti colorati che una volta premuti aggiu
 
 Nella parte inferiore dello schermo sono presenti due pulsanti per cancellare la sequenza e per finire la partita.
 
-### Chronology Screen 
+### Chronology Screen
 Composta da una lista delle partite precedenti: ogni elemento della lista mostra quanti pulsanti sono stati premuti e la sequenza. Le partite sono mostrate in **ordine cronologico**, la più recente per prima e vengono colorate mantenendo l'ordine di colori rosso-giallo-verde-ciano-blu-magenta.
 
 Se la sequenza non può essere scrtta interamente nello schermo viene troncata con **...**

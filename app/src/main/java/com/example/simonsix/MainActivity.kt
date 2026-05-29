@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity(){
                         // Chronology screen: shows all sequences of previous matches
                         composable(route = "chronology") {
                             val games by viewModel.previousGames.observeAsState(emptyList())
+                            viewModel.resetGame()
 
                             ChronologyScreen(
                                 previousGames = games,

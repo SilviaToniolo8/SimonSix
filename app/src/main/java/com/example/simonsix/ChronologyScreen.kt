@@ -129,7 +129,7 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
                     }
                 } else {
                     items(previousGames) { game ->
-                    //itemsIndexed(items = previousGames) { index, game ->
+
                         Row(
                             Modifier.fillMaxWidth()
                                 .clickable(onClick = {onGameClicked(game)}),
@@ -154,23 +154,6 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
             }
         }
     }
-}
-
-// Assign each row a color by cycling through the six colors in the game:
-// red → yellow → green → cyan → blue → magenta → red → ..
-@Composable
-private fun chooseColor(index: Int): Color
-{
-    val colors = listOf(
-        colorResource(id = R.color.red),
-        colorResource(id = R.color.yellow),
-        colorResource(id = R.color.green),
-        colorResource(id = R.color.cyan),
-        colorResource(id = R.color.blue),
-        colorResource(id = R.color.magenta)
-    )
-
-    return colors[index % colors.size]
 }
 
 @Composable

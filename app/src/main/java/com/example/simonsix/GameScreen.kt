@@ -3,6 +3,7 @@ package com.example.simonsix
 import kotlinx.coroutines.delay
 import android.util.Log
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,6 +59,9 @@ import com.example.simonsix.ui.theme.TitleFont
 @Composable
 fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onPauseClicked: () -> Unit, onFinishClicked: () -> Unit)
 {
+    BackHandler() {
+        onFinishClicked()
+    }
     val orientation = LocalConfiguration.current.orientation
 
     // scrollState is used to remember the current scroll position
@@ -507,7 +511,6 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isPauseClicked: Bo
                 colorResource(id = R.color.emerald),
                 Color.White
             ),
-            //TODO implementare fine partita
             onClick = onFinishClicked
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -18,6 +18,11 @@ val TextFont = FontFamily(
     Font(R.font.kazycase, FontWeight.Bold)
 )
 
+val GameFont = FontFamily(
+    Font(R.font.game_power, FontWeight.Normal),
+    Font(R.font.game_power, FontWeight.Bold)
+)
+
 val GameOverFont = FontFamily(
     Font(R.font.positive_system, FontWeight.Normal),
     Font(R.font.positive_system, FontWeight.Bold)

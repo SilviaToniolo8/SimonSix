@@ -41,6 +41,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     var isFirstSequence = true
 
+    private var isAlreadySaved = false
+
     private var currentJob : Job ?= null
 
     private val repository: GameRepository
@@ -101,23 +103,34 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     fun onFinishClicked(){
         currentJob?.cancel()
 
-        if (!isFirstSequence){
-            val strRandomSequence = randomSequence.joinToString(",")
-            //GamesData.previousGames.add(0, strRandomSequence)
+        if (!isFirstSequence && !isAlreadySaved){
+            val strRandomSequence = randomSequence.joinToString(",").replace(",","")
 
-            val errorIndex =  if(_uiState.value.isShowingSequence)
-                0
-            else
-                _uiState.value.sequence.count { it != ',' }
+            val errorIndex =
+                // se si sta mostrando la sequenza e finisce la partita è sbagliata tutta la sequenza
+                if(_uiState.value.isShowingSequence)
+                    0
+                else if (_uiState.value.isGameOver )
+                    _uiState.value.sequence.count { it != ',' } - 1
+                else {
+                    _uiState.value.sequence.count { it != ',' }
+                }
 
             val newGame = Game(0, strRandomSequence, errorIndex)
             insert(newGame)
+
+            isAlreadySaved = true
         }
     }
 
     fun onColorClicked(letter: String){
 
         playSound(letter)
+
+        val currentIndex = _uiState.value.sequence.count { it != ',' }
+
+        // Indice fuori bounds = la sequenza è già completa, ignora il tap
+        if (currentIndex >= randomSequence.size) return
 
         _uiState.update { currentState ->
             currentState.copy(
@@ -129,6 +142,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
         // update the state if is game over
         if(_uiState.value.isGameOver) {
+            onFinishClicked()
+
             _uiState.update { currentState ->
                 currentState.copy(
                     isGridEnabled = false,
@@ -138,9 +153,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                     isStartEnabled = false,
                     isFinishEnabled = false
                 )}
-
-            GamesData.previousGames.add(0, randomSequence.joinToString(","))
-            GamesData.errorIndex = _uiState.value.sequence.count { it != ',' }
         }
 
         else if(_uiState.value.sequence.count { it != ',' } == randomSequence.size){
@@ -161,7 +173,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("StartGame", "Sequenza generata: ${randomSequence}")
 
     }
-
     private fun playSound(letter: String) {
         soundMap[letter]?.let { soundId ->
             soundPool.play(soundId, 1f, 1f, 0, 0, 1f)
@@ -210,6 +221,28 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             isFirstSequence = false
+        }
+    }
+
+    fun resetGame(){
+        randomSequence.clear()
+        isFirstSequence = true
+        isAlreadySaved = false
+
+        // reset the state
+        _uiState.update { currentState ->
+            currentState.copy(
+                sequence = "",
+                isShowingSequence = false,
+                isStartEnabled = true,
+                isPauseEnabled = false,
+                isFinishEnabled = false,
+                isGridEnabled = false,
+                activeButton = null,
+                isGameOver = false,
+                isPause = false,
+                resumeIndex = 0
+            )
         }
     }
 }
