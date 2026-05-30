@@ -38,11 +38,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.simonsix.ui.theme.TextFont
-import com.example.simonsix.ui.theme.TitleFont
 
 @Composable
 fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicked: (Game) -> Unit) {
     Scaffold(
+        //--- START GAME ---
         floatingActionButton = {FloatingActionButton(
             shape = CircleShape,
             containerColor = colorResource(id = R.color.magenta),
@@ -65,23 +65,9 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
         ) {
 
             //--- TITLE ---
-            Text(
-                fontFamily = TitleFont,
-                fontSize = 55.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 3.sp,
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
-                }
-            )
+            SimonSixTitle()
 
+            //--- GAMES LIST ---
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -125,9 +111,10 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
                                 )
                             }
                         }
-
                     }
                 } else {
+
+                    //--- GAME ITEM ---
                     items(previousGames) { game ->
 
                         Row(
@@ -135,18 +122,34 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
                                 .clickable(onClick = {onGameClicked(game)}),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+
+                            //--- NUMBER OF BUTTON PRESSED ---
                             Text(
-                                modifier = Modifier.width(48.dp).padding(start=8.dp),
-                                text = game.sequence.count { it != '[' && it != ','  && it != ' ' && it != ']' }.toString(),
+                                modifier = Modifier.width(48.dp).padding(start = 10.dp),
+                                text = game.sequence.length.toString(),
                                 fontSize = 20.sp
                             )
 
-                            ColorTextItem(
-                                Modifier
+                            //--- SEQUENCE OF BUTTON ---
+                            Text(
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .safeDrawingPadding()
                                     .padding(10.dp),
-                                game
+                                fontSize = 50.sp,
+                                fontFamily = TextFont,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                text = buildAnnotatedString {
+                                    for ((index, c) in game.sequence.withIndex()) {
+                                        if (index >= game.errorIndex && index != game.sequence.length){
+                                            withStyle(style = SpanStyle(Color(colorResource(id = R.color.gray).toArgb()))) {append(c.lowercase())}
+                                        }
+                                        else
+                                             withStyle(SpanStyle(simonCharColor(c))) { append(c.lowercase()) }
+                                    }
+                                }
                             )
                         }
                     }
@@ -154,32 +157,4 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
             }
         }
     }
-}
-
-@Composable
-fun ColorTextItem(modifier: Modifier, game: Game) {
-    Text(
-        modifier = modifier,
-        fontSize = 50.sp,
-        fontFamily = TextFont,
-        fontWeight = FontWeight.Bold,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        text = buildAnnotatedString {
-            for ((index, c) in game.sequence.withIndex()) {
-                if (index >= game.errorIndex && index != game.sequence.length){
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.gray).toArgb()))) {append(c.lowercase())}
-                }
-                else when (c) {
-                    'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("r")}
-                    'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("y")}
-                    'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("g")}
-                    'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {append("c")}
-                    'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {append("b")}
-                    'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) {append("m")}
-                    ',' -> withStyle(style = SpanStyle(color = Color.White)) {append(",")}
-                }
-            }
-        }
-    )
 }

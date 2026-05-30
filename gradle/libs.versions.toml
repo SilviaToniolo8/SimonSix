@@ -9,7 +9,6 @@ activityCompose = "1.13.0"
 kotlin = "2.0.21"
 composeBom = "2024.09.00"
 navigationCompose = "2.9.7"
-composeMaterial3 = "1.6.1"
 ksp = "2.0.21-1.0.28"
 runtimeLivedata = "1.11.2"
 

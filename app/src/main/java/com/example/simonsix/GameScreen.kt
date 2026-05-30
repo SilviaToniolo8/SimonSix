@@ -1,7 +1,6 @@
 package com.example.simonsix
 
 import kotlinx.coroutines.delay
-import android.util.Log
 import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -32,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -50,16 +48,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.simonsix.ui.theme.GameOverFont
 import com.example.simonsix.ui.theme.TextFont
-import com.example.simonsix.ui.theme.TitleFont
-
 @Composable
 fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (String) -> Unit, onPauseClicked: () -> Unit, onFinishClicked: () -> Unit)
 {
-    BackHandler() {
+    BackHandler {
         onFinishClicked()
     }
     val orientation = LocalConfiguration.current.orientation
@@ -80,22 +74,7 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(
-                fontFamily = TitleFont,
-                fontWeight = FontWeight.Bold,
-                fontSize = 55.sp,
-                letterSpacing = 3.sp,
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                    withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
-                }
-            )
+            SimonSixTitle()
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -156,22 +135,7 @@ fun GameScreen(game: GameUiState, onStartClicked: () -> Unit, onColorClicked: (S
                 Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    fontFamily = TitleFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 55.sp,
-                    letterSpacing = 3.sp,
-                    text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("m") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) { append("o") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) { append("n ") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) { append("S") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) { append("i") }
-                        withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) { append("x") }
-                    }
-                )
+                SimonSixTitle()
 
                 Row(
                     modifier = Modifier
@@ -410,9 +374,6 @@ private fun GridSixButtonsLayout(modifier: Modifier, activeButton: String?, isCl
 }
 
 // Displays the sequence with each letter in the color of the corresponding button.
-// buildAnnotatedString allows different styles for each character in the same Text.
-// The Color is constructed by ARGB because SpanStyle doesn't directly accept a Compose Color.
-//https://developer.android.com/develop/ui/compose/text/style-text#multiple-styles
 @Composable
 fun ColorText(modifier: Modifier, sequence: String, isGameOver: Boolean) {
     Text(
@@ -420,20 +381,17 @@ fun ColorText(modifier: Modifier, sequence: String, isGameOver: Boolean) {
         fontSize = 50.sp,
         fontFamily = TextFont,
         fontWeight = FontWeight.Bold,
-        lineHeight = 40.sp,
+        lineHeight = 55.sp,
         text = buildAnnotatedString {
             for ((index, c) in sequence.withIndex()) {
                 if (isGameOver && index == sequence.length-1){
                     withStyle(style = SpanStyle(Color(colorResource(id = R.color.gray).toArgb()))) {append(c.lowercase())}
                 }
-                else when (c) {
-                    'R' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.red).toArgb()))) {append("r")}
-                    'Y' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.yellow).toArgb()))) {append("y")}
-                    'G' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.green).toArgb()))) {append("g")}
-                    'C' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.cyan).toArgb()))) {append("c")}
-                    'B' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.blue).toArgb()))) {append("b")}
-                    'M' -> withStyle(style = SpanStyle(Color(colorResource(id = R.color.magenta).toArgb()))) {append("m")}
-                    ',' -> withStyle(style = SpanStyle(color = Color.White)) {append(", ")}
+                else {
+                    if (c == ',')
+                        withStyle(SpanStyle(simonCharColor(c))) {append(", ")}
+                    else
+                        withStyle(SpanStyle(simonCharColor(c))) { append(c.lowercase()) }
                 }
             }
         }
@@ -452,7 +410,7 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isPauseClicked: Bo
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        //START GAME
+        //--- START GAME ---
         Button(
             modifier = Modifier.size(70.dp),
             enabled = isStart,
@@ -477,7 +435,7 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isPauseClicked: Bo
             }
         }
 
-        //PAUSA
+        //--- PAUSE ---
         Button(
             modifier = Modifier.size(70.dp),
             enabled = isPause,
@@ -501,7 +459,7 @@ private fun ActionButtons(isStart: Boolean, isPause: Boolean, isPauseClicked: Bo
             }
         }
 
-        //FINISH
+        //--- FINISH ---
         Button(
             modifier = Modifier.size(70.dp),
             enabled = isFinish,

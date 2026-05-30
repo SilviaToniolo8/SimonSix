@@ -2,7 +2,6 @@ package com.example.simonsix
 
 import android.app.Application
 import android.media.SoundPool
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -63,7 +62,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         soundMap["B"] = soundPool.load(application, R.raw.sound_b, 1)
         soundMap["M"] = soundPool.load(application, R.raw.sound_m, 1)
 
-        val gamesDao = GameRoomDatabase.getDatabase(application, viewModelScope).gameDao()
+        val gamesDao = GameRoomDatabase.getDatabase(application).gameDao()
         repository = GameRepository(gamesDao)
         previousGames = repository.allGames
     }
@@ -107,7 +106,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             val strRandomSequence = randomSequence.joinToString(",").replace(",","")
 
             val errorIndex =
-                // se si sta mostrando la sequenza e finisce la partita è sbagliata tutta la sequenza
+                // if the sequence is being displayed and the game ends, the entire sequence is incorrect
                 if(_uiState.value.isShowingSequence)
                     0
                 else if (_uiState.value.isGameOver )
@@ -129,7 +128,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
         val currentIndex = _uiState.value.sequence.count { it != ',' }
 
-        // Indice fuori bounds = la sequenza è già completa, ignora il tap
+        //if the index is out of bounds, the sequence is already complete, and therefore the click is ignored
         if (currentIndex >= randomSequence.size) return
 
         _uiState.update { currentState ->
@@ -169,9 +168,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val list = listOf("R", "Y", "G", "C", "B", "M")
 
         randomSequence.add(list.random())
-
-        Log.d("StartGame", "Sequenza generata: ${randomSequence}")
-
     }
     private fun playSound(letter: String) {
         soundMap[letter]?.let { soundId ->
@@ -182,7 +178,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         currentJob?.cancel()
 
         currentJob = viewModelScope.launch{
-            //--- stato iniziale dei pulsanti ---
+            //--- initial state of the buttons ---
             _uiState.update { currentState ->
                 currentState.copy(
                     sequence = "",
@@ -192,7 +188,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 )
             }
 
-            //--- pulsanti illuminati ---
+            //--- illuminated button ---
 
             delay(300L)
 
@@ -210,7 +206,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 delay(400L)
             }
 
-            //--- stato finale dei pulsanti ---
+            //--- final state of the buttons ---
             _uiState.update { currentState ->
                 currentState.copy(
                     isGridEnabled = true,

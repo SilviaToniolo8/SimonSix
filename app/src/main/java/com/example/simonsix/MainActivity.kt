@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity(){
                             )
                         }
 
+                        // Detail screen: shows the detail of a previous match
                         composable(route = "details/{id}") { backStackEntry ->
                             val id = backStackEntry.arguments?.getString("id")?.toInt() ?: 0
                             val game by viewModel.getGameById(id).observeAsState()
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity(){
                             }
                         }
 
+                        // Game screen: game
                         composable(route = "game") {
                             val state by viewModel.uiState.collectAsStateWithLifecycle()
 
