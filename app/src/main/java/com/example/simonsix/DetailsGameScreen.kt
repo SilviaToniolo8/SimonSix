@@ -94,7 +94,10 @@ fun DetailsGameScreen (game: Game)
                     )
 
                     Text(
-                        text = game.sequence.length.toString(),
+                        text = if (game.errorIndex == game.sequence.length)
+                            game.sequence.length.toString()
+                        else
+                            (game.sequence.length-1).toString(),
                         modifier = Modifier.padding(8.dp)
                     )
                 }

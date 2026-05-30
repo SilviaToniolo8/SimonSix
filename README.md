@@ -14,7 +14,7 @@ supporta anche la modalità **giorno** e **notte**.
 
 ### Chronology Screen
 La schermata è composta da una lista delle partite precedenti: ogni elemento della lista è cliccabile
-e mostra quanti pulsanti sono stati premuti e la sequenza.
+e mostra il numero massimo di pulsanti premuti e la sequenza dove si ha sbagliato o si è finita la partita.
 Le partite sono mostrate in **ordine cronologico**.
 
 Se la sequenza non può essere scritta interamente nello schermo viene troncata con **...**.
@@ -23,7 +23,8 @@ Per avviare una nuova partita è necessario premere il pulsante magenta nell'ang
 
 ### Detail Screen
 Se viene cliccata una partita viene mostrata la Detail Screen. In questa schermata viene indicato il
-numero di partita, quanti pulsanti sono stati premuti e la sequenza.
+numero di partita, il numero massimo di pulsanti premuti e la sequenza dove si ha sbagliato
+o si è finita la partita.
 
 
 ### Game Screen
@@ -60,6 +61,18 @@ In caso di sequenza errata finisce la partita e per tornare alla homepage è nec
     <td><img src="screenshots/game_over_dark.jpg" alt="Game over" width="200"></td>
   </tr>
 </table>
+
+---
+## Struttura del progetto
+
+```
+com.example.simonsix
+├── MainActivity.kt             — configurazione del grafico di navigazione
+├── ChronologyScreen.kt         — cronologia delle partite precedenti
+├── DetailsGameScreen.kt        — dettagli di una partita
+├── GameScreen.kt               — schermata di gioco
+└── CommonComponents.kt         — componenti comuni: titolo e lettere colorate
+```
 
 ---
 

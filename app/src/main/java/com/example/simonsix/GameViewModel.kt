@@ -19,7 +19,7 @@ import kotlin.text.isEmpty
 // data for the ui
 data class GameUiState (
     val sequence: String = "",              // sequence of buttons clicked by the player
-    val isShowingSequence: Boolean = false,// indicates whether the sequence is being shown
+    val isShowingSequence: Boolean = false, // indicates whether the sequence is being shown
     val isStartEnabled: Boolean = true,     // indicates whether the Start button can be pressed
     val isPauseEnabled: Boolean = false,    // indicates whether the Pause button can be pressed
     val isFinishEnabled: Boolean = false,   // indicates whether the Finish button can be pressed
@@ -166,7 +166,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun generateSequence() {
         val list = listOf("R", "Y", "G", "C", "B", "M")
-
         randomSequence.add(list.random())
     }
     private fun playSound(letter: String) {

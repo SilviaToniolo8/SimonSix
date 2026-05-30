@@ -126,8 +126,11 @@ fun ChronologyScreen(previousGames: List<Game> ,onPlay: () -> Unit, onGameClicke
                             //--- NUMBER OF BUTTON PRESSED ---
                             Text(
                                 modifier = Modifier.width(48.dp).padding(start = 10.dp),
-                                text = game.sequence.length.toString(),
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                text = if (game.errorIndex == game.sequence.length)
+                                    game.sequence.length.toString()
+                                else
+                                    (game.sequence.length-1).toString(),
                             )
 
                             //--- SEQUENCE OF BUTTON ---
